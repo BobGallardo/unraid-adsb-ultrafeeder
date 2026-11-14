@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CommunityApplications>
   <Profile>Unraid Community Applications templates for self-hosted ADS-B aircraft reception. The ADS-B Ultrafeeder template wraps the independently maintained SDR-Enthusiasts Docker image for Unraid, including RTL-SDR configuration, aircraft map, graphs, and optional data-feeder inputs. Maintained by community contributors; not affiliated with the upstream image maintainers.</Profile>
-  <Icon>https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder/main/assets/icon.svg</Icon>
-  <WebPage>https://github.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder</WebPage>
+  <Icon>https://raw.githubusercontent.com/BobGallardo/unraid-adsb-ultrafeeder/main/assets/icon.svg</Icon>
+  <WebPage>https://github.com/BobGallardo/unraid-adsb-ultrafeeder</WebPage>
 </CommunityApplications>
