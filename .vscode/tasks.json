@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Validate Unraid XML template",
+      "type": "shell",
+      "command": "python",
+      "args": ["scripts/validate.py"],
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Check publication placeholders",
+      "type": "shell",
+      "command": "python",
+      "args": ["scripts/validate.py", "--publish"],
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

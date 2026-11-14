@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Container version="2">
+  <Name>ADS-B Ultrafeeder</Name>
+  <Repository>ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest</Repository>
+  <Registry>https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder/pkgs/container/docker-adsb-ultrafeeder</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <MyMAC/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder/issues</Support>
+  <Project>https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder</Project>
+  <Overview>Receive and decode ADS-B aircraft signals with an RTL-SDR or supported external input. Includes readsb, tar1090 map, graphs1090 statistics, and optional MLAT/feeder connections. No external data sharing is configured by this template.</Overview>
+  <Category>Tools:Utilities</Category>
+  <WebUI>http://[IP]:[PORT:8080]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder/main/templates/adsb-ultrafeeder.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder/main/assets/icon.svg</Icon>
+  <ExtraParams>--device-cgroup-rule='c 189:* rwm' --restart=unless-stopped</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <Date>2026-11-14</Date>
+  <Config Name="Web UI" Target="80" Default="8080" Mode="tcp" Description="tar1090 aircraft map. Bridge-network host port 8080 maps to container port 80. On a custom-IP network, access the container IP on port 80." Type="Port" Display="always" Required="true" Mask="false">8080</Config>
+  <Config Name="Beast Output" Target="30005" Default="30005" Mode="tcp" Description="Beast-format ADS-B data for existing feeder clients. On a custom-IP network, use the container IP and port 30005." Type="Port" Display="advanced" Required="false" Mask="false">30005</Config>
+  <Config Name="USB Bus" Target="/dev/bus/usb" Default="/dev/bus/usb" Mode="rw" Description="Mount the host USB bus so the RTL-SDR can reconnect after USB enumeration changes. Requires device cgroup rule in Extra Parameters. Review security implications: exposes host USB devices to the container." Type="Path" Display="always" Required="true" Mask="false">/dev/bus/usb</Config>
+  <Config Name="Globe History" Target="/var/globe_history" Default="/mnt/user/appdata/adsb-ultrafeeder/globe_history" Mode="rw" Description="Persistent aircraft traces and globe history." Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/adsb-ultrafeeder/globe_history</Config>
+  <Config Name="Graphs1090 Data" Target="/var/lib/collectd" Default="/mnt/user/appdata/adsb-ultrafeeder/graphs1090" Mode="rw" Description="Persistent graphs1090 reception statistics." Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/adsb-ultrafeeder/graphs1090</Config>
+  <Config Name="Timezone" Target="TZ" Default="Etc/UTC" Mode="" Description="IANA timezone, e.g. America/Los_Angeles." Type="Variable" Display="always" Required="true" Mask="false">Etc/UTC</Config>
+  <Config Name="Antenna Latitude" Target="READSB_LAT" Default="" Mode="" Description="Antenna latitude in decimal degrees. Required; do not publish your private antenna coordinates in a shared template." Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="Antenna Longitude" Target="READSB_LON" Default="" Mode="" Description="Antenna longitude in decimal degrees. Required." Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="Antenna Altitude" Target="READSB_ALT" Default="" Mode="" Description="Antenna altitude above mean sea level with units, e.g. 125m or 410ft. Required." Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="SDR Device Type" Target="READSB_DEVICE_TYPE" Default="rtlsdr" Mode="" Description="Receiver type. Default: rtlsdr. For network-only ADS-B sources, consult upstream configuration." Type="Variable" Display="always" Required="true" Mask="false">rtlsdr</Config>
+  <Config Name="RTL-SDR Serial" Target="READSB_RTLSDR_DEVICE" Default="" Mode="" Description="Optional RTL-SDR serial; specify when multiple compatible dongles are present." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="RTL-SDR Gain" Target="READSB_GAIN" Default="auto" Mode="" Description="Receiver gain in dB or auto (recommended by upstream)." Type="Variable" Display="always" Required="false" Mask="false">auto</Config>
+  <Config Name="RTL-SDR PPM" Target="READSB_RTLSDR_PPM" Default="0" Mode="" Description="Optional frequency correction in parts per million." Type="Variable" Display="advanced" Required="false" Mask="false">0</Config>
+  <Config Name="Enable Bias Tee" Target="READSB_ENABLE_BIASTEE" Default="false" Mode="" Description="Enable only if your SDR and antenna amplifier require bias-tee DC power. Do not enable blindly." Type="Variable" Display="advanced" Required="false" Mask="false">false</Config>
+  <Config Name="Receiver Location Accuracy" Target="READSB_RX_LOCATION_ACCURACY" Default="1" Mode="" Description="Published location precision: 0=internal only; 1=approximate (2 decimals); 2=exact; 3=1 decimal; 4=0 decimals." Type="Variable" Display="advanced" Required="false" Mask="false">1</Config>
+  <Config Name="Range Statistics" Target="READSB_STATS_RANGE" Default="true" Mode="" Description="Collect receiver range stats for tar1090 and graphs1090." Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="Map Page Title" Target="TAR1090_PAGETITLE" Default="ADS-B Ultrafeeder" Mode="" Description="Title shown on the tar1090 browser page." Type="Variable" Display="advanced" Required="false" Mask="false">ADS-B Ultrafeeder</Config>
+  <Config Name="Additional Feed Configuration" Target="ULTRAFEEDER_CONFIG" Default="" Mode="" Description="Optional upstream adsb/mlat/MLAT-hub configuration. Leave empty to avoid configuring outbound data sharing. See upstream docs for exact syntax." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="MLAT Station Name" Target="MLAT_USER" Default="" Mode="" Description="Optional MLAT station identifier (letters, digits, dashes, underscores); used if MLAT feeds are configured." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+</Container>

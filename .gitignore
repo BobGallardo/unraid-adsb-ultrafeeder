@@ -1,0 +1,16 @@
+# Local environment, device inventory, and secrets
+.env
+.env.*
+!.env.example
+*.local.xml
+*.private.xml
+secrets/
+private/
+# Tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/.ropeproject/
+# OS
+.DS_Store
+Thumbs.db
