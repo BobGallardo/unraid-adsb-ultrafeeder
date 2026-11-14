@@ -47,6 +47,8 @@ def main() -> int:
 
     if (root.findtext("Repository") or "") != "ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest":
         errors.append("Unexpected Docker image repository")
+    if (root.findtext("Network") or "") != "bridge":
+        errors.append("Default network must be bridge so the container shares the Unraid server IP")
     if (root.findtext("Privileged") or "").lower() != "false":
         errors.append("Container must not require privileged mode")
 
@@ -57,8 +59,16 @@ def main() -> int:
             errors.append(f"Missing mandatory environment setting: {name}")
     if len(targets) != len(set(targets)):
         errors.append("Duplicate Config Target entries")
-    if not any(c.attrib.get("Target") == "80" and c.attrib.get("Type") == "Port" for c in configs):
-        errors.append("Container web port 80 is not mapped")
+    if not any(
+        c.attrib.get("Target") == "80"
+        and c.attrib.get("Type") == "Port"
+        and c.attrib.get("Default") == "8080"
+        and (c.text or "").strip() == "8080"
+        for c in configs
+    ):
+        errors.append("Container web port 80 must default to host port 8080")
+    if (root.findtext("WebUI") or "") != "http://[IP]:[PORT:80]/":
+        errors.append("WebUI must reference container port 80 so Unraid resolves the selected network port")
     if "--device-cgroup-rule=" not in (root.findtext("ExtraParams") or ""):
         errors.append("Missing USB device cgroup permission")
     if not any(c.attrib.get("Target") == "/dev/bus/usb" and c.attrib.get("Type") == "Path" for c in configs):

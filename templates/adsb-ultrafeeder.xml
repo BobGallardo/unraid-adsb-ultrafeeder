@@ -12,14 +12,14 @@
   <Project>https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder</Project>
   <Overview>Receive and decode ADS-B aircraft signals with an RTL-SDR or supported external input. Includes readsb, tar1090 map, graphs1090 statistics, and optional MLAT/feeder connections. No external data sharing is configured by this template.</Overview>
   <Category>Tools:Utilities</Category>
-  <WebUI>http://[IP]:[PORT:8080]/</WebUI>
+  <WebUI>http://[IP]:[PORT:80]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/BobGallardo/unraid-adsb-ultrafeeder/main/templates/adsb-ultrafeeder.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/BobGallardo/unraid-adsb-ultrafeeder/main/assets/icon.svg</Icon>
   <ExtraParams>--device-cgroup-rule='c 189:* rwm' --restart=unless-stopped</ExtraParams>
   <PostArgs/>
   <CPUset/>
   <Date>2026-11-14</Date>
-  <Config Name="Web UI" Target="80" Default="8080" Mode="tcp" Description="tar1090 aircraft map. Bridge-network host port 8080 maps to container port 80. On a custom-IP network, access the container IP on port 80." Type="Port" Display="always" Required="true" Mask="false">8080</Config>
+  <Config Name="Web UI" Target="80" Default="8080" Mode="tcp" Description="tar1090 aircraft map. In bridge mode, the host port defaults to 8080 and maps to container port 80; you can change the host port. With a dedicated container IP, use that IP on port 80; the host port setting does not change the container's listening port." Type="Port" Display="always" Required="true" Mask="false">8080</Config>
   <Config Name="Beast Output" Target="30005" Default="30005" Mode="tcp" Description="Beast-format ADS-B data for existing feeder clients. On a custom-IP network, use the container IP and port 30005." Type="Port" Display="advanced" Required="false" Mask="false">30005</Config>
   <Config Name="USB Bus" Target="/dev/bus/usb" Default="/dev/bus/usb" Mode="rw" Description="Mount the host USB bus so the RTL-SDR can reconnect after USB enumeration changes. Requires device cgroup rule in Extra Parameters. Review security implications: exposes host USB devices to the container." Type="Path" Display="always" Required="true" Mask="false">/dev/bus/usb</Config>
   <Config Name="Globe History" Target="/var/globe_history" Default="/mnt/user/appdata/adsb-ultrafeeder/globe_history" Mode="rw" Description="Persistent aircraft traces and globe history." Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/adsb-ultrafeeder/globe_history</Config>
