@@ -1,77 +1,104 @@
-# Unraid ADS-B Ultrafeeder Template
+# ADS-B Ultrafeeder for Unraid
 
-Community-maintained **Unraid Docker XML template** for the separately developed [SDR-Enthusiasts ADS-B Ultrafeeder](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder) image. Provides RTL-SDR reception, a tar1090 aircraft map, graphs1090 station statistics, and optional feeder/MLAT configuration through Unraid's Docker UI.
+An Unraid Docker template for [SDR-Enthusiasts ADS-B Ultrafeeder](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder). Use a compatible ADS-B receiver to track nearby aircraft on a local map, monitor receiver performance, and optionally share data with flight-tracking services.
 
-> **Status: draft, not yet tested on physical Unraid hardware or published in Community Apps.** The GitHub URLs below contain `YOUR_GITHUB_USERNAME` placeholders. Test locally and customize before submission.
+This community-maintained repository supplies the **Unraid installation template**. The Ultrafeeder application and Docker image are developed separately by SDR-Enthusiasts.
 
-## What is in this repository
+> **Project status:** This template is in pre-release testing and is **not yet listed in Unraid Community Apps**. Its configuration has not yet been verified on physical Unraid hardware. Follow the manual installation instructions below until a Community Apps release is available.
 
-```text
-.
-├── templates/adsb-ultrafeeder.xml  # Unraid Docker template
-├── ca_profile.xml                  # Community Apps repository metadata
-├── assets/icon.svg                # Repository/application icon
-├── scripts/validate.py            # Offline XML validation (stdlib only)
-├── .github/workflows/validate.yml # GitHub Actions CI
-├── .vscode/tasks.json             # VS Code tasks
-├── docs/migration-from-adsb-main.md
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-└── LICENSE
-```
+## Features
 
-## Develop with VS Code and Git
+- **Live aircraft map:** [tar1090](https://github.com/wiedehopf/tar1090) displays aircraft detected by your receiver.
+- **Receiver statistics:** graphs1090 provides reception and range history.
+- **RTL-SDR support:** Connect a compatible USB SDR and antenna to your Unraid server.
+- **Beast data output:** Share locally decoded aircraft data with compatible feeder containers on TCP port `30005`.
+- **Optional feeding and MLAT:** Configure external services if you choose; the template does **not** enable any external data-sharing destination by default.
+- **Unraid Docker UI:** Configure the receiver, antenna position, networking, and optional settings without writing a Docker Compose file.
 
-1. Extract the ZIP and open **File → Open Folder** in VS Code.
-2. Install [Git](https://git-scm.com/downloads) and Python 3 if needed. The VS Code Source Control view manages local history.
-3. Open the VS Code terminal and initialize the repo:
+## Requirements
 
-   ```powershell
-   git init -b main
-   git add .
-   git commit -m "Initial Unraid ADS-B Ultrafeeder template"
-   ```
+- An Unraid server with Docker enabled.
+- A compatible ADS-B receiver (such as an RTL-SDR) and antenna, or another supported input configured according to the [upstream documentation](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder).
+- The antenna's **latitude, longitude, and altitude above mean sea level**. Include units for altitude, such as `125m` or `410ft`.
+- **USB ADS-B receiver:** If you're using an RTL-SDR connected to your Unraid server, the Docker container needs permission to access it. The template includes settings for USB device access.
 
-4. Edit the XML under `templates/`, then run **Terminal → Run Task → Validate Unraid XML template** (or `python scripts/validate.py`).
-5. For a change, use `git switch -c feature/my-change`, commit, and merge via pull request when you have a GitHub remote.
-6. **Before pushing**: review `git status`, redact station positions, SDR serials, local DNS records, and passwords. This repo intentionally contains none of those.
+Only one decoder should control a given USB receiver at a time. Stop older containers such as `adsb-main` before starting Ultrafeeder with the same receiver.
 
-## Try the template in Unraid before publishing
+## Installation
 
-1. Back up your old `adsb-main` template and stop the container so it releases the USB SDR.
-2. Copy `templates/adsb-ultrafeeder.xml` to `/boot/config/plugins/dockerMan/templates-user/my-adsb-ultrafeeder.xml` on Unraid. This is a **local testing** method, not Community Apps publication.
-3. In Unraid **Docker → Add Container**, select the `ADS-B Ultrafeeder` template (depending on the UI, you may need to reload the Docker page).
-4. Enter your own **latitude, longitude, antenna altitude with units**, and timezone. Check the USB bus mount and device cgroup rule before starting.
-5. Decide whether to use default `bridge` networking or your own VLAN with a dedicated IP. On bridge, the template maps host `8080` to container `80`. With a container-specific LAN IP, the map is on that IP's **port 80**; the host port-mapping field does not rewrite the internal listener.
-6. Confirm the tar1090 map works, check `/graphs1090`, and test Beast output on 30005 with your existing feeder containers.
-7. Optional remote feeds are **not** configured by default. Use the upstream `ULTRAFEEDER_CONFIG` syntax if you explicitly choose to enable them.
+### Manual installation (current pre-release)
 
-**Hardware and Unraid UI behavior still need live testing**. If the image reports USB permission errors, validate the Extra Parameters generated by Unraid rather than making the container privileged.
+1. Download [`templates/adsb-ultrafeeder.xml`](templates/adsb-ultrafeeder.xml) from this repository.
+2. Copy it to your Unraid flash drive as `/boot/config/plugins/dockerMan/templates-user/my-adsb-ultrafeeder.xml`.
+3. In the Unraid web interface, open **Docker → Add Container** and choose the **ADS-B Ultrafeeder** template. Refresh the Docker page if the new template is not immediately listed.
+4. Enter your antenna position, altitude (with units), and timezone. Review the receiver and USB settings.
+5. Choose your Docker network. The default template uses **bridge**; a custom VLAN or network with a dedicated IP is also possible.
+6. Apply the template, start the container, and open its WebUI.
 
-See [migration guidance](docs/migration-from-adsb-main.md).
+**When this template is published to Community Apps**, installation will be available through Unraid's **Apps** tab. Until then, do not expect it to appear in Community Apps search.
 
-## Prepare GitHub publication
+### Important settings
 
-1. Choose a public GitHub repo named `unraid-adsb-ultrafeeder` (or update references if you choose another name).
-2. Replace `YOUR_GITHUB_USERNAME` in `templates/adsb-ultrafeeder.xml` and `ca_profile.xml`. Update `<Support>` to a usable GitHub issues URL or real support forum thread. Review the license and attribution.
-3. Run `python scripts/validate.py --publish` to catch missing owner metadata.
-4. Create a GitHub remote and push:
+| Unraid setting | What to enter |
+| --- | --- |
+| **Antenna Latitude** (`READSB_LAT`) | Decimal latitude of your receiving antenna |
+| **Antenna Longitude** (`READSB_LON`) | Decimal longitude of your receiving antenna |
+| **Antenna Altitude** (`READSB_ALT`) | Altitude above mean sea level, **including units** (for example `125m`) |
+| **Timezone** (`TZ`) | IANA timezone such as `America/Los_Angeles` |
+| **SDR Device Type** (`READSB_DEVICE_TYPE`) | Leave as `rtlsdr` for a compatible RTL-SDR receiver |
+| **RTL-SDR Gain** (`READSB_GAIN`) | Start with the template's `auto` setting; tune later if needed |
+| **Enable Bias Tee** (`READSB_ENABLE_BIASTEE`) | Enable only if your SDR and amplifier require bias-tee power |
+| **Additional Feed Configuration** (`ULTRAFEEDER_CONFIG`) | Leave blank unless intentionally configuring remote feeds or MLAT |
 
-   ```powershell
-   git remote add origin https://github.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder.git
-   git push -u origin main
-   ```
+The template mounts `/dev/bus/usb` and includes a USB device cgroup rule to accommodate USB device reconnections. Check these settings if the receiver is not detected. The mount exposes host USB devices to the container; understand that access before enabling it.
 
-5. Check the icon and raw XML URLs after pushing. Follow the current [Community Apps submission process](https://ca.unraid.net/submit), including **Validate** and **Scan**. Submission requires `ca_profile.xml`, an OSI-approved license, and support/metadata URLs.
-6. Maintain the template, test updates, and respond to issues. This repository does not claim to be endorsed by SDR-Enthusiasts or Unraid.
+Other settings are available through Unraid's **Advanced View**. See the [Ultrafeeder documentation](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder) for detailed receiver and feeding options.
 
-## References
+## Open the aircraft map
 
-- [Upstream Ultrafeeder README](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder/blob/main/README.md)
-- [Upstream Docker Compose example](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder/blob/main/docker-compose.yml)
-- [Unraid Community Apps: submission rules](https://ca.unraid.net/submit/help)
-- [Community Apps XML format](https://ca.unraid.net/submit/help/repository-xml)
+The address depends on the Docker network selected during installation:
 
-## Notes on security and privacy
+| Network mode | Map URL | Beast data output |
+| --- | --- | --- |
+| **Bridge** (template default) | `http://UNRAID-IP:8080/` | `UNRAID-IP:30005` |
+| **Custom network with its own IP** | `http://CONTAINER-IP/` (port `80`) | `CONTAINER-IP:30005` |
 
-The USB bus mount grants access to potentially sensitive USB devices. Use a dedicated receiver and only trusted images. ADS-B station position can identify your receiver's location; station coordinates are deliberately not included in the public template. No third-party feed is enabled by the template, and no reverse proxy, SSL, or internet-facing service is required for the local map.
+Replace `UNRAID-IP` or `CONTAINER-IP` with the address assigned in your own installation. The template's default browser port for bridge mode is `8080`; Ultrafeeder listens on port `80` **inside** the container.
+
+For receiver charts, open `/graphs1090` on the same web address. If you do not see aircraft immediately, check the container logs and receiver/antenna configuration before assuming the map is broken.
+
+## Optional data sharing
+
+Ultrafeeder can supply decoded data to other local containers and, when configured, external flight-tracking networks. **This template does not configure outbound feeding or MLAT destinations by default.**
+
+If you already use separate flight-tracking feeder containers, review their configured Beast source and update it to the new Ultrafeeder host and TCP port `30005` as needed. For Ultrafeeder-managed feeds, use the upstream [`ULTRAFEEDER_CONFIG` documentation](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder) and explicitly configure only the destinations you intend to use.
+
+## Migrating from adsb-main
+
+Follow the [migration guide](docs/migration-from-adsb-main.md) to transfer station settings and maintain compatibility with existing feeder containers. Keep a copy of your previous Unraid template until reception and downstream feeds have been verified.
+
+## Troubleshooting
+
+| Problem | What to check |
+| --- | --- |
+| **No aircraft appear** | Confirm the receiver is detected in the container logs, the antenna is connected, and the latitude/longitude are correct |
+| **USB receiver unavailable** | Stop other SDR decoder containers; review the USB bus mount and device cgroup rule |
+| **WebUI does not open** | Confirm the container is running and use the correct address/port for bridge versus custom-IP networking |
+| **Graphs are missing** | Check `/graphs1090` and the persistent graphs1090 data mount |
+| **Existing feeder containers stop receiving data** | Update their Beast source hostname/IP and verify TCP port `30005` is reachable |
+| **Container fails to start** | Review the Unraid Docker container logs and verify required position and receiver settings |
+
+For issues with the **Ultrafeeder application**, consult the [upstream project](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder). For template-specific issues, use this template repository's issue tracker once its public repository URL is established.
+
+## Security and privacy
+
+- Your antenna coordinates may reveal the location of your receiver. Do not publish personal station settings or logs containing sensitive information without reviewing them.
+- The template exposes a local web interface; it does not configure a public reverse proxy or internet-facing service. Actual reachability depends on your network and firewall configuration.
+- Sharing data with external tracking services is optional and must be configured explicitly.
+- USB access is broader than a single fixed device path. Use images you trust and keep them updated.
+
+## Acknowledgments and contributions
+
+Ultrafeeder is developed by [SDR-Enthusiasts](https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder). This Unraid template is an independent community project and is not an official SDR-Enthusiasts or Unraid release.
+
+Bug reports and improvements to the **Unraid template** are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for contributor instructions and [CHANGELOG.md](CHANGELOG.md) for changes.
