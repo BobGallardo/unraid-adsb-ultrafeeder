@@ -8,13 +8,13 @@
   <MyMAC/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder/issues</Support>
+  <Support>https://github.com/BobGallardo/unraid-adsb-ultrafeeder/issues</Support>
   <Project>https://github.com/sdr-enthusiasts/docker-adsb-ultrafeeder</Project>
   <Overview>Receive and decode ADS-B aircraft signals with an RTL-SDR or supported external input. Includes readsb, tar1090 map, graphs1090 statistics, and optional MLAT/feeder connections. No external data sharing is configured by this template.</Overview>
   <Category>Tools:Utilities</Category>
   <WebUI>http://[IP]:[PORT:8080]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder/main/templates/adsb-ultrafeeder.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/unraid-adsb-ultrafeeder/main/assets/icon.svg</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/BobGallardo/unraid-adsb-ultrafeeder/main/templates/adsb-ultrafeeder.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/BobGallardo/unraid-adsb-ultrafeeder/main/assets/icon.svg</Icon>
   <ExtraParams>--device-cgroup-rule='c 189:* rwm' --restart=unless-stopped</ExtraParams>
   <PostArgs/>
   <CPUset/>
